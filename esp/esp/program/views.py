@@ -47,8 +47,6 @@ from esp.qsd.models import QuasiStaticData
 from esp.qsd.forms import QSDMoveForm, QSDBulkMoveForm
 from django.http import HttpResponseRedirect, HttpResponseBadRequest
 
-from django.core.mail import send_mail
-
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.redirects.models import Redirect
@@ -77,7 +75,7 @@ from esp.users.models import ESPUser, Permission, admin_required, ZipCode, UserA
 from esp.middleware import ESPError
 from esp.accounting.controllers import ProgramAccountingController, IndividualAccountingController
 from esp.accounting.models import CybersourcePostback
-from esp.dbmail.models import MessageRequest, TextOfEmail, PlainRedirect
+from esp.dbmail.models import MessageRequest, TextOfEmail, PlainRedirect, send_mail
 from esp.mailman import create_list, load_list_settings, apply_list_settings, add_list_members
 from esp.resources.models import ResourceType
 from esp.tagdict.models import Tag
