@@ -13,17 +13,20 @@ from urllib.parse import quote_plus
 
 def force_str(x):
     """
-    Forces x to a str, encoding via utf8 if needed.
+    Forces x to a str.
 
-    >>> force_str('\\xc3\\x85ngstrom')
-    '\\xc3\\x85ngstrom'
-    >>> force_str(u'\\xc5ngstrom')
-    '\\xc3\\x85ngstrom'
+    On Python 3, str is already unicode, so this just ensures the
+    input is a str. Non-str values are converted via str().
+
+    >>> force_str('hello')
+    'hello'
+    >>> force_str(42)
+    '42'
 
     """
-    if isinstance(x, str) or isinstance(x, str):
+    if isinstance(x, str):
         return x
-    return str(x).encode('utf8')
+    return str(x)
 
 def ascii(x):
     """
