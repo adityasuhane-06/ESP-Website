@@ -697,6 +697,46 @@ class StudentClassRegModule(ProgramModuleObj):
         #  Otherwise this will be a 404
         return None
 
+    @aux_call
+    @needs_student_in_grade
+    def studentschedule_ics(self, request, tl, one, two, module, extra, prog):
+        """ Return the student's schedule as an iCalendar (.ics) file """
+        from esp.program.controllers.studentclassregmodule import RegistrationTypeController as RTC
+        verbs = RTC.getVisibleRegistrationTypeNames(prog=prog)
+        regProf = RegistrationProfile.getLastForProgram(request.user, prog)
+        classList = ClassSection.prefetch_catalog_data(regProf.preregistered_classes(verbs=verbs))
+        
+        lines = [
+            "BEGIN:VCALENDAR",
+            "VERSION:2.0",
+            "PRODID:-//Learning Unlimited//ESP Website//EN",
+            "CALSCALE:GREGORIAN",
+            "METHOD:PUBLISH"
+        ]
+        
+        for sec in classList:
+            sec.verbs = sec.getRegVerbs(request.user, allowed_verbs=verbs)
+            sec.verb_names = [v.name for v in sec.verbs]
+            if "Enrolled" in sec.verb_names:
+                for mt in sec.get_meeting_times():
+                    lines.append("BEGIN:VEVENT")
+                    lines.append("DTSTART:" + mt.start.strftime('%Y%m%dT%H%M%S'))
+                    lines.append("DTEND:" + mt.end.strftime('%Y%m%dT%H%M%S'))
+                    summary = sec.title.replace('\\\\', '\\\\\\\\').replace(';', '\\\\;').replace(',', '\\\\,')
+                    lines.append("SUMMARY:" + summary)
+                    rooms = sec.prettyrooms()
+                    if rooms:
+                        location = ", ".join(rooms).replace('\\\\', '\\\\\\\\').replace(';', '\\\\;').replace(',', '\\\\,')
+                        lines.append("LOCATION:" + location)
+                    lines.append("END:VEVENT")
+                    
+        lines.append("END:VCALENDAR")
+        content = "\r\n".join(lines) + "\r\n"
+        
+        response = HttpResponse(content, content_type='text/calendar')
+        response['Content-Disposition'] = 'attachment; filename="schedule.ics"'
+        return response
+
     class Meta:
         proxy = True
         app_label = 'modules'

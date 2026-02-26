@@ -25,6 +25,11 @@ function togglePopup() {
       <tbody>
         <th colspan="3" class="user_info">
             <i>Classes for {{user.first_name}} {{user.last_name}} - ID: {{user.id}}</i>
+            <div style="margin-top: 8px;">
+                <a href="/learn/{{one}}/{{two}}/studentschedule_ics" class="no-dec" style="display: inline-block; padding: 4px 8px; background-color: #2196F3; color: white; border-radius: 4px; font-weight: normal; font-size: 0.9em;">
+                    <i class="material-icons" style="vertical-align: middle; font-size: 1.2em;">event</i> Export to Calendar
+                </a>
+            </div>
             {% if not checked_in %}
                 <p class="checkinnote">{{ checkin_note }}</p>
             {% endif %}
